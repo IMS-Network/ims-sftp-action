@@ -15,18 +15,27 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Install netcat
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y netcat
+
     - name: Start SFTP server
       run: |
-        docker run -d -p 2222:22 -e SFTP_USER=testuser -e SFTP_PASSWORD=testpassword -e SFTP_DIRECTORY=test-remote-dir --name sftp-server atmoz/sftp
+        ssh-keygen -t rsa -b 4096 -N "" -f /tmp/sftp_key
+        docker run -d -p 2222:22 --name sftp-server -e SFTP_USERS="testuser:/tmp/sftp_key.pub" -e SFTP_ROOT=test-remote-dir \
+        -v /tmp/sftp_key.pub:/tmp/sftp_key.pub atmoz/sftp
 
     - name: Wait for SFTP server to start
       run: |
         while ! nc -z localhost 2222; do sleep 1; done
 
+    
     - name: Test SSH Connection
       run: |
-        ssh -o StrictHostKeyChecking=no -p 2222 testuser@localhost
-      shell: bash
+        ssh -o StrictHostKeyChecking=no -i /tmp/sftp_key -p 2222 testuser@localhost "echo SSH connection successful"
+
+      
 
     - name: Create test files
       run: |
