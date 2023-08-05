@@ -2,10 +2,10 @@ name: Test IMS - Network Action
 on:
   push:
     branches:
-      - Production
+      - production
   pull_request:
     branches:
-      - Production
+      - production
 
 jobs:
   test:
