@@ -2,10 +2,10 @@ name: Test IMS - Network Action
 on:
   push:
     branches:
-      - production
+      - Production
   pull_request:
     branches:
-      - production
+      - main
 
 jobs:
   test:
@@ -13,11 +13,11 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Start SFTP server
       run: |
-        docker run -d -p 2222:22 --name sftp-server atmoz/sftp:testuser:testpassword:::test-remote-dir
+        docker run -d -p 2222:22 -e SFTP_USER=testuser -e SFTP_PASSWORD=testpassword -e SFTP_DIRECTORY=test-remote-dir --name sftp-server atmoz/sftp
 
     - name: Wait for SFTP server to start
       run: |
