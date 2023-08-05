@@ -22,6 +22,11 @@ jobs:
     - name: Wait for SFTP server to start
       run: |
         while ! nc -z localhost 2222; do sleep 1; done
+        
+    - name: Test SFTP Connection
+      run: |
+        ssh -o StrictHostKeyChecking=no -p 2222 testuser@localhost
+      shell: bash
 
     - name: Create test files
       run: |
