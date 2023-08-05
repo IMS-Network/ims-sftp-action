@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Start SFTP server
       run: |
@@ -29,7 +29,7 @@ jobs:
         echo "This is a test file" > test-local-dir/test-file.txt
 
     - name: Test IMS - Network Action
-      uses: ./
+      uses: your-username/your-repo-name@v1
       with:
         url: sftp://testuser:testpassword@localhost:2222/test-remote-dir/
         local-directory: ./test-local-dir/
