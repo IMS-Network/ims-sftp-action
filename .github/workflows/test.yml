@@ -22,8 +22,8 @@ jobs:
     - name: Wait for SFTP server to start
       run: |
         while ! nc -z localhost 2222; do sleep 1; done
-        
-    - name: Test SFTP Connection
+
+    - name: Test SSH Connection
       run: |
         ssh -o StrictHostKeyChecking=no -p 2222 testuser@localhost
       shell: bash
@@ -37,4 +37,9 @@ jobs:
       uses: ims-network/ims-sftp-action@v1.2
       with:
         url: sftp://testuser:testpassword@localhost:2222/test-remote-dir/
-        localdir: ./test-local-dir/   # Change 'local-directory' to 'localdir'
+        local-directory: ./test-local-dir/
+
+    - name: List files on the remote server
+      run: |
+        ssh -p 2222 testuser@localhost ls -R /test-remote-dir
+      shell: bash
