@@ -1,4 +1,4 @@
-name: IMS - Network
+name: IMS - SFTP Action
 branding:
   icon: satellite
   color: orange
@@ -11,7 +11,7 @@ runs:
   steps:
     - name: Upload files using SFTP
       run: |
-        cd ${{ github.event.inputs.local-directory }}
+        cd ${{ inputs.local-directory }}
         # Create a temporary script for sftp commands
         echo "
           \$(find . -type d | sed -e 's/^/mkdir /;')
@@ -19,7 +19,7 @@ runs:
           exit
         " > /tmp/commands.ftp
         # Run sftp command with input from the script file
-        sftp ${{ github.event.inputs.url }} < /tmp/commands.ftp
+        sftp ${{ inputs.url }} < /tmp/commands.ftp
       shell: bash
     - name: Clean up temporary files
       # Clean up the temporary script file
