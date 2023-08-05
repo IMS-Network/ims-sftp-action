@@ -1,0 +1,35 @@
+name: Test IMS - Network Action
+on:
+  push:
+    branches:
+      - Production
+  pull_request:
+    branches:
+      - Production
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Start SFTP server
+      run: |
+        docker run -d -p 2222:22 --name sftp-server atmoz/sftp:testuser:testpassword:::test-remote-dir
+
+    - name: Wait for SFTP server to start
+      run: |
+        while ! nc -z localhost 2222; do sleep 1; done
+
+    - name: Create test files
+      run: |
+        mkdir -p test-local-dir
+        echo "This is a test file" > test-local-dir/test-file.txt
+
+    - name: Test IMS - Network Action
+      uses: ./
+      with:
+        url: sftp://testuser:testpassword@localhost:2222/test-remote-dir/
+        local-directory: ./test-local-dir/
