@@ -1,5 +1,4 @@
 name: IMS - Network
-# Update the branding as per your preference
 branding:
   icon: satellite
   color: orange
@@ -10,17 +9,12 @@ author: ims-network
 runs:
   using: 'composite'
   steps:
-    - name: Set up Git environment
-      # You can set up git config and credentials here if needed.
-      # For example, you can configure git user.name and user.email.
-      run: git config --global user.name 'GitHub Action' && git config --global user.email 'action@github.com'
-      shell: bash
     - name: Upload files using SFTP
       run: |
-        cd ${{ github.event.inputs.localdir }}
+        cd ${{ github.event.inputs.local-directory }}
         # Create a temporary script for sftp commands
         echo "
-          $(find . -type d | sed -e 's/^/mkdir /;')
+          \$(find . -type d | sed -e 's/^/mkdir /;')
           put -r .
           exit
         " > /tmp/commands.ftp
@@ -35,6 +29,6 @@ inputs:
   url:
     description: 'URL to the SFTP server. Example: sftp://USERNAME:PASSWORD@example.com/remote-directory'
     required: true
-  localdir:
+  local-directory:
     description: 'The directory that should be uploaded'
     required: true
