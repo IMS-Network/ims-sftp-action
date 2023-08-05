@@ -9,9 +9,6 @@ author: ims-network
 runs:
   using: 'composite'
   steps:
-    - name: Set up Git environment
-      run: git config --global user.name 'GitHub Action' && git config --global user.email 'action@github.com'
-      shell: bash
     - name: Upload files using SFTP
       run: |
         cd ${{ github.event.inputs.local-directory }}
