@@ -2,7 +2,7 @@
 
 ## Description
 
-The IMS - Network GitHub Action allows you to easily upload files recursively using FTP/SFTP to an IMS network server. It reads the specified local directory and securely uploads its contents to the provided SFTP server URL.
+The IMS - Network GitHub Action allows you to upload files recursively using FTP/SFTP to an IMS network server. It reads the specified local directory and securely uploads its contents to the provided SFTP server URL.
 
 ## Usage
 
@@ -18,7 +18,7 @@ To use this action, you need to provide the SFTP server URL and the local direct
 
 **Example:** `sftp://USERNAME:PASSWORD@example.com/remote-directory`
 
-> Note: Please replace `USERNAME` and `PASSWORD` with your actual SFTP credentials. It is recommended to use GitHub Secrets to store sensitive information.
+> Note: Please replace `USERNAME` and `PASSWORD` with your SFTP credentials. It is recommended to use GitHub Secrets to store sensitive information.
 
 #### `localdir`
 
@@ -48,7 +48,8 @@ jobs:
         localdir: 'path/to/local-directory'
 ```
 ### Author
-This GitHub Action is maintained by ims-network. For any questions or issues, please feel free to reach out.
+This GitHub Action is maintained by ims-network. For any questions or issues, please feel free to reach out.\
+Originally created by @Atyn
 
 ### License
 This project is distributed under the [MIT License](LICENSE).
