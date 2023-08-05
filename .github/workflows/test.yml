@@ -32,4 +32,4 @@ jobs:
       uses: ims-network/ims-sftp-action@v1
       with:
         url: sftp://testuser:testpassword@localhost:2222/test-remote-dir/
-        local-directory: ./test-local-dir/
+        localdir: ./test-local-dir/   # Change 'local-directory' to 'localdir'
