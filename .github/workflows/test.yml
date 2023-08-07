@@ -42,11 +42,16 @@ jobs:
       - name: Create file to be transferred
         run: echo "This is a test file" > test.txt
 
+      - name: Create a directory and file to be transferred
+        run: |
+          mkdir test-local-dir
+          echo "This is a test file" > test-local-dir/test.txt
+
       - name: Test IMS - Network Action
         uses: ims-network/ims-sftp-action@v1.2
         with:
           url: sftp://testing:testing@localhost:22/home/testing/sftp/
-          local-directory: ./test.txt
+          local-directory: ./test-local-dir
 
       - name: Check if the file exists on the server
         run: |
