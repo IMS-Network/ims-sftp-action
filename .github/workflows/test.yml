@@ -8,47 +8,57 @@ on:
       - production
 
 jobs:
-  test:
+  test_sftp:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install netcat
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y netcat
+      - name: Install SFTP server
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-server
+          sudo systemctl start sshd
 
-    - name: Start SFTP server
-      run: |
-        ssh-keygen -t rsa -b 4096 -N "" -f /tmp/sftp_key
-        docker run -d -p 2222:22 --name sftp-server -e SFTP_USERS="testuser:/tmp/sftp_key.pub" -e SFTP_ROOT=test-remote-dir \
-        -v /tmp/sftp_key.pub:/tmp/sftp_key.pub atmoz/sftp
+      - name: Create SFTP user
+        run: |
+          sudo useradd -m testing
+          echo "testing:testing" | sudo chpasswd
+          sudo mkdir /home/testing/sftp
+          sudo chown testing:testing /home/testing/sftp
+          echo 'Match User testing
+          ChrootDirectory %h/sftp
+          AllowTCPForwarding no
+          X11Forwarding no
+          ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
+          sudo systemctl restart sshd
 
-    - name: Wait for SFTP server to start
-      run: |
-        while ! nc -z localhost 2222; do sleep 1; done
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
-    
-    - name: Test SSH Connection
-      run: |
-        ssh -o StrictHostKeyChecking=no -i /tmp/sftp_key -p 2222 testuser@localhost "echo SSH connection successful"
+      - name: Create SFTP Batch File
+        run: echo "put test.txt" > sftp_batch.txt
 
-      
+      - name: Create file to be transferred
+        run: echo "This is a test file" > test.txt
 
-    - name: Create test files
-      run: |
-        mkdir -p test-local-dir
-        echo "This is a test file" > test-local-dir/test-file.txt
+      - name: Test IMS - Network Action
+        uses: ims-network/ims-sftp-action@v1.2
+        with:
+          url: sftp://testing:testing@localhost:22/home/testing/sftp/
+          local-directory: ./test.txt
 
-    - name: Test IMS - Network Action
-      uses: ims-network/ims-sftp-action@v1.2
-      with:
-        url: sftp://testuser:testpassword@localhost:2222/test-remote-dir/
-        local-directory: ./test-local-dir/
+      - name: Check if the file exists on the server
+        run: |
+          if sudo test -f /home/testing/sftp/test.txt; then
+            echo "File exists"
+          else
+            echo "File does not exist"
+            exit 1
+          fi
 
-    - name: List files on the remote server
-      run: |
-        ssh -p 2222 testuser@localhost ls -R /test-remote-dir
-      shell: bash
+      - name: Cleanup
+        run: |
+          sudo deluser --remove-home testing
+          sudo sed -i '/Match User testing/,+4d' /etc/ssh/sshd_config
+          sudo systemctl restart sshd
