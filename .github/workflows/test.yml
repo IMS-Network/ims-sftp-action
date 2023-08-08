@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install SFTP server
+      - name: Setup SFTP server
         run: |
           sudo apt-get update
           sudo apt-get install -y openssh-server
@@ -22,18 +22,16 @@ jobs:
           sudo systemctl start sshd
           mkdir -p ~/.ssh
           ssh-keyscan -H localhost >> ~/.ssh/known_hosts
-
-      - name: Create SFTP user
-        run: |
           sudo useradd -m testing
           echo "testing:testing" | sudo chpasswd
           sudo mkdir /home/testing/sftp
           sudo chown testing:testing /home/testing/sftp
           echo 'Match User testing
+          PasswordAuthentication yes
           ChrootDirectory %h/sftp
           AllowTCPForwarding no
           X11Forwarding no
-          #ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
+          ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
 
       - name: Install sshpass
@@ -68,5 +66,5 @@ jobs:
       - name: Cleanup
         run: |
           sudo deluser --remove-home testing
-          sudo sed -i '/Match User testing/,+4d' /etc/ssh/sshd_config
+          sudo sed -i '/Match User testing/,+5d' /etc/ssh/sshd_config
           sudo systemctl restart sshd
