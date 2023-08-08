@@ -21,7 +21,7 @@ runs:
         PASSWORD=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d: -f2 | cut -d@ -f1)
         SERVER=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d@ -f2)
         # Use lftp to upload the files
-        lftp -u $USERNAME,$PASSWORD sftp://$SERVER -e "
+        lftp -d -u $USERNAME,$PASSWORD sftp://$SERVER -e "
           mirror --reverse --delete --verbose
           quit
         "
