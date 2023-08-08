@@ -34,16 +34,10 @@ jobs:
           ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-
-      - name: Create SFTP Batch File
-        run: echo "put test.txt" > sftp_batch.txt
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
 
       - name: Create file to be transferred
-        run: echo "This is a test file" > test.txt
-
-      - name: Create a directory and file to be transferred
         run: |
           mkdir test-local-dir
           echo "This is a test file" > test-local-dir/test.txt
