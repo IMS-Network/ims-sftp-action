@@ -9,17 +9,22 @@ author: ims-network
 runs:
   using: 'composite'
   steps:
+    - name: Install lftp
+      run: sudo apt-get update && sudo apt-get install -y lftp
+      shell: bash
+
     - name: Upload files using SFTP
       run: |
         cd ${{ inputs.local-directory }}
-        # Create a temporary script for sftp commands
-        echo "
-          \$(find . -type d | sed -e 's/^/mkdir /;')
-          put -r .
-          exit
-        " > /tmp/commands.ftp
-        # Run sftp command with input from the script file
-        sftp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ inputs.url }} < /tmp/commands.ftp
+        # Extract the username, password, and server URL from the inputs.url
+        USERNAME=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d: -f1)
+        PASSWORD=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d: -f2 | cut -d@ -f1)
+        SERVER=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d@ -f2)
+        # Use lftp to upload the files
+        lftp -u $USERNAME,$PASSWORD sftp://$SERVER -e "
+          mirror --reverse --delete --verbose
+          quit
+        "
       shell: bash
     - name: Clean up temporary files
       # Clean up the temporary script file
