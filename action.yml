@@ -19,7 +19,7 @@ runs:
           exit
         " > /tmp/commands.ftp
         # Run sftp command with input from the script file
-        sftp ${{ inputs.url }} < /tmp/commands.ftp
+        sftp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ inputs.url }} < /tmp/commands.ftp
       shell: bash
     - name: Clean up temporary files
       # Clean up the temporary script file
