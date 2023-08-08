@@ -33,7 +33,7 @@ jobs:
           ChrootDirectory %h/sftp
           AllowTCPForwarding no
           X11Forwarding no
-          ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
+          #ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
 
       - name: Install sshpass
