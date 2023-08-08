@@ -9,31 +9,25 @@ author: ims-network
 runs:
   using: 'composite'
   steps:
-    - name: Install lftp
-      run: sudo apt-get update && sudo apt-get install -y lftp
-      shell: bash
-
     - name: Upload files using SFTP
       run: |
         cd ${{ inputs.local-directory }}
-        # Extract the username, password, and server URL from the inputs.url
-        USERNAME=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d: -f1)
-        PASSWORD=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d: -f2 | cut -d@ -f1)
-        SERVER=$(echo ${{ inputs.url }} | cut -d/ -f3 | cut -d@ -f2)
-        # Use lftp to upload the files
-        lftp -u $USERNAME,$PASSWORD sftp://$SERVER -e "
-          mirror --reverse --delete --verbose
-          quit
-        "
-      shell: bash
-    - name: Clean up temporary files
-      # Clean up the temporary script file
-      run: rm /tmp/commands.ftp
+        # Use curl to upload the files
+        find . -type f -exec curl -u ${{ inputs.username }}:${{ inputs.password }} --disable-epsv --ftp-method nocwd -T {} sftp://${{ inputs.server }}/${{ inputs.remote-directory }}/{} \;
       shell: bash
 inputs:
-  url:
-    description: 'URL to the SFTP server. Example: sftp://USERNAME:PASSWORD@example.com/remote-directory'
+  username:
+    description: 'Username for the SFTP server.'
+    required: true
+  password:
+    description: 'Password for the SFTP server.'
+    required: true
+  server:
+    description: 'SFTP server address. Example: example.com'
+    required: true
+  remote-directory:
+    description: 'Remote directory on the SFTP server to upload files to.'
     required: true
   local-directory:
-    description: 'The directory that should be uploaded'
+    description: 'The directory that should be uploaded.'
     required: true
