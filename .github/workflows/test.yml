@@ -18,6 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y openssh-server
+          echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl start sshd
           mkdir -p ~/.ssh
           ssh-keyscan -H localhost >> ~/.ssh/known_hosts
