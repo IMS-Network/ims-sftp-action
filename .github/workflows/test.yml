@@ -51,7 +51,7 @@ jobs:
           echo "This is a test file" > test-local-dir/test.txt
 
       - name: Test IMS - Network Action
-        uses: ims-network/ims-sftp-action@v1.2
+        uses: ims-network/ims-sftp-action@v1.5
         with:
           url: sftp://testing:testing@localhost:22/home/testing/sftp/
           local-directory: ./test-local-dir
