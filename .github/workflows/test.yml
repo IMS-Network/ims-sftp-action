@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install SFTP server
+      - name: Setup SFTP server
         run: |
           sudo apt-get update
           sudo apt-get install -y openssh-server
@@ -22,30 +22,19 @@ jobs:
           sudo systemctl start sshd
           mkdir -p ~/.ssh
           ssh-keyscan -H localhost >> ~/.ssh/known_hosts
-
-      - name: Create SFTP user
-        run: |
           sudo useradd -m testing
           echo "testing:testing" | sudo chpasswd
           sudo mkdir /home/testing/sftp
           sudo chown testing:testing /home/testing/sftp
           echo 'Match User testing
+          PasswordAuthentication yes
           ChrootDirectory %h/sftp
           AllowTCPForwarding no
           X11Forwarding no
-          #ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
+          ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-
-      - name: Create SFTP Batch File
-        run: echo "put test.txt" > sftp_batch.txt
-
       - name: Create file to be transferred
-        run: echo "This is a test file" > test.txt
-
-      - name: Create a directory and file to be transferred
         run: |
           mkdir test-local-dir
           echo "This is a test file" > test-local-dir/test.txt
@@ -53,7 +42,10 @@ jobs:
       - name: Test IMS - Network Action
         uses: ims-network/ims-sftp-action@v1.5
         with:
-          url: sftp://testing:testing@localhost:22/home/testing/sftp/
+          username: testing
+          password: testing
+          server: localhost
+          remote-directory: /home/testing/sftp
           local-directory: ./test-local-dir
 
       - name: Check if the file exists on the server
@@ -68,5 +60,5 @@ jobs:
       - name: Cleanup
         run: |
           sudo deluser --remove-home testing
-          sudo sed -i '/Match User testing/,+4d' /etc/ssh/sshd_config
+          sudo sed -i '/Match User testing/,+5d' /etc/ssh/sshd_config
           sudo systemctl restart sshd
