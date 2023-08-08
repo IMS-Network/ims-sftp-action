@@ -19,6 +19,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openssh-server
           sudo systemctl start sshd
+          mkdir -p ~/.ssh
+          ssh-keyscan -H localhost >> ~/.ssh/known_hosts
 
       - name: Create SFTP user
         run: |
