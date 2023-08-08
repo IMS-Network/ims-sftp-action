@@ -34,9 +34,6 @@ jobs:
           ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
       - name: Create file to be transferred
         run: |
           mkdir test-local-dir
@@ -45,7 +42,10 @@ jobs:
       - name: Test IMS - Network Action
         uses: ims-network/ims-sftp-action@v1.2
         with:
-          url: sftp://testing:testing@localhost:22/home/testing/sftp/
+          username: testing
+          password: testing
+          server: localhost
+          remote-directory: /home/testing/sftp
           local-directory: ./test-local-dir
 
       - name: Check if the file exists on the server
