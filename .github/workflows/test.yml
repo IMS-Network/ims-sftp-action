@@ -40,7 +40,7 @@ jobs:
           echo "This is a test file" > test-local-dir/test.txt
 
       - name: Test IMS - Network Action
-        uses: ims-network/ims-sftp-action@v1.5
+        uses: ims-network/ims-sftp-action@v1.6
         with:
           username: testing
           password: testing
