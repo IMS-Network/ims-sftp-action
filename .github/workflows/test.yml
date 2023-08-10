@@ -45,10 +45,14 @@ jobs:
           X11Forwarding no
           ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
+      - name: Check SSH Server Logs and Status
+        run: |
+          sudo journalctl -u ssh | tail -n 30
+          sudo systemctl status ssh
 
       - name: Diagnose SFTP Connection
         run: |
-          sshpass -p "testing" sftp -oBatchMode=no -oPasswordAuthentication=yes testing@127.0.0.1:/home/testing/sftp
+          sshpass -p "testing" sftp -v -oBatchMode=no -oPasswordAuthentication=yes testing@127.0.0.1:/home/testing/sftp
 
       - name: Create file to be transferred
         run: |
@@ -56,7 +60,7 @@ jobs:
           echo "This is a test file" > test-local-dir/test.txt
 
       - name: Test IMS - Network Action
-        uses: ims-network/ims-sftp-action@v1.5
+        uses: ims-network/ims-sftp-action@v1.6
         with:
           username: testing
           password: testing
