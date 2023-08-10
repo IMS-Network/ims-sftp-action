@@ -14,18 +14,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SFTP server
+      - name: Install required tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y openssh-server
+          sudo apt-get install -y openssh-server sshpass
+
+      - name: Configure SSHD for password authentication
+        run: |
           echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl start sshd
+
+      - name: Add known hosts
+        run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H localhost >> ~/.ssh/known_hosts
+          ssh-keyscan -H 127.0.0.1 >> ~/.ssh/known_hosts
+
+      - name: Create SFTP user and configure permissions
+        run: |
           sudo useradd -m testing
           echo "testing:testing" | sudo chpasswd
           sudo mkdir /home/testing/sftp
           sudo chown testing:testing /home/testing/sftp
+
+      - name: Update SSHD config for SFTP user
+        run: |
           echo 'Match User testing
           PasswordAuthentication yes
           ChrootDirectory %h/sftp
@@ -36,7 +48,7 @@ jobs:
 
       - name: Diagnose SFTP Connection
         run: |
-          echo "testing" | sftp -oBatchMode=no -oPasswordAuthentication=yes testing@127.0.0.1:/home/testing/sftp
+          sshpass -p "testing" sftp -oBatchMode=no -oPasswordAuthentication=yes testing@127.0.0.1:/home/testing/sftp
 
       - name: Create file to be transferred
         run: |
@@ -44,7 +56,7 @@ jobs:
           echo "This is a test file" > test-local-dir/test.txt
 
       - name: Test IMS - Network Action
-        uses: ims-network/ims-sftp-action@v1.6
+        uses: ims-network/ims-sftp-action@v1.5
         with:
           username: testing
           password: testing
