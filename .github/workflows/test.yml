@@ -36,7 +36,7 @@ jobs:
 
       - name: Diagnose SFTP Connection
         run: |
-          echo "testing" | sftp -oBatchMode=no -oPasswordAuthentication=yes testing@localhost:/home/testing/sftp
+          echo "testing" | sftp -oBatchMode=no -oPasswordAuthentication=yes testing@127.0.0.1:/home/testing/sftp
 
       - name: Create file to be transferred
         run: |
@@ -48,7 +48,7 @@ jobs:
         with:
           username: testing
           password: testing
-          server: localhost
+          server: 127.0.0.1
           remote-directory: /home/testing/sftp
           local-directory: ./test-local-dir
 
