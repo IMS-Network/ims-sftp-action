@@ -34,6 +34,10 @@ jobs:
           ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart sshd
 
+      - name: Diagnose SFTP Connection
+        run: |
+          echo "testing" | sftp -oBatchMode=no -oPasswordAuthentication=yes testing@localhost:/home/testing/sftp
+
       - name: Create file to be transferred
         run: |
           mkdir test-local-dir
