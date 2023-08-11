@@ -28,10 +28,19 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Set environment variables
+      run: |
+        echo "INPUT_USERNAME=${{ inputs.username }}" >> $GITHUB_ENV
+        echo "INPUT_PASSWORD=${{ inputs.password }}" >> $GITHUB_ENV
+        echo "INPUT_SERVER=${{ inputs.server }}" >> $GITHUB_ENV
+        echo "INPUT_PORT=${{ inputs.port }}" >> $GITHUB_ENV
+        echo "INPUT_REMOTE_DIRECTORY=${{ inputs.remote-directory }}" >> $GITHUB_ENV
+        echo "INPUT_LOCAL_DIRECTORY=${{ inputs.local-directory }}" >> $GITHUB_ENV
+
     - name: Upload files using SFTP
       run: |
-          # Debugging line
-          echo "Constructed URL: sftp://${{ inputs.server }}:${{ inputs.port }}/${{ inputs.remote-directory }}/$(basename ${{ inputs.local-directory }})"
-          # Use curl to upload the files
-          find ${{ inputs.local-directory }} -type f -exec bash -c 'curl -u ${{ inputs.username }}:${{ inputs.password }} --disable-epsv --ftp-method nocwd -T {} sftp://${{ inputs.server }}:${{ inputs.port }}/${{ inputs.remote-directory }}/$(basename {})' \;
+        # Debugging line
+        echo "Constructed URL: sftp://$INPUT_SERVER:$INPUT_PORT/$INPUT_REMOTE_DIRECTORY/$(basename $INPUT_LOCAL_DIRECTORY)"
+        # Use curl to upload the files
+        find $INPUT_LOCAL_DIRECTORY -type f -exec bash -c 'curl -u $INPUT_USERNAME:$INPUT_PASSWORD --disable-epsv --ftp-method nocwd -T {} sftp://$INPUT_SERVER:$INPUT_PORT/$INPUT_REMOTE_DIRECTORY/$(basename {})' \;
       shell: bash
