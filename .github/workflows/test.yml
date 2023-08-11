@@ -22,7 +22,7 @@ jobs:
       - name: Configure SSHD for password authentication
         run: |
           echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
-          sudo systemctl start sshd
+          sudo systemctl restart ssh
 
       - name: Add known hosts
         run: |
@@ -40,19 +40,14 @@ jobs:
         run: |
           echo 'Match User testing
           PasswordAuthentication yes
-          ChrootDirectory %h/sftp
-          AllowTCPForwarding no
-          X11Forwarding no
+          ChrootDirectory /home/testing/sftp
           ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
-          sudo systemctl restart sshd
+          sudo systemctl restart ssh
+
       - name: Check SSH Server Logs and Status
         run: |
-          sudo journalctl -u ssh | tail -n 30
+          sudo journalctl -u ssh --no-pager --lines=30
           sudo systemctl status ssh
-
-      - name: Diagnose SFTP Connection
-        run: |
-          sshpass -p "testing" sftp -v -oBatchMode=no -oPasswordAuthentication=yes testing@127.0.0.1:/home/testing/sftp
 
       - name: Create file to be transferred
         run: |
@@ -81,4 +76,4 @@ jobs:
         run: |
           sudo deluser --remove-home testing
           sudo sed -i '/Match User testing/,+5d' /etc/ssh/sshd_config
-          sudo systemctl restart sshd
+          sudo systemctl restart ssh
