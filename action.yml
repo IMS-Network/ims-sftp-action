@@ -30,8 +30,8 @@ runs:
   steps:
     - name: Upload files using SFTP
       run: |
-        # Debugging line
-        echo "Constructed URL: sftp://${{ inputs.server }}:${{ inputs.port }}/${{ inputs.remote-directory }}/$(basename {})"
-        # Use curl to upload the files
-        find ${{ inputs.local-directory }} -type f -exec bash -c 'curl -u ${{ inputs.username }}:${{ inputs.password }} --disable-epsv --ftp-method nocwd -T {} sftp://${{ inputs.server }}:${{ inputs.port }}/${{ inputs.remote-directory }}/$(basename {})' \;
+          # Debugging line
+          echo "Constructed URL: sftp://${{ inputs.server }}:${{ inputs.port }}/${{ inputs.remote-directory }}/$(basename {})"
+          # Use curl to upload the files
+          find ${{ inputs.local-directory }} -type f -exec bash -c 'curl -u ${{ inputs.username }}:${{ inputs.password }} --disable-epsv --ftp-method nocwd -T {} sftp://${{ inputs.server }}:${{ inputs.port }}/${{ inputs.remote-directory }}/$(basename {})' \;
       shell: bash
