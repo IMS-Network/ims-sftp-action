@@ -68,8 +68,8 @@ jobs:
       #     sshpass -p "testing" ssh testing@127.0.0.1 "if [ -f /home/testing/sftp/test.txt ]; then echo 'File exists'; else echo 'File does not exist'; exit 1; fi; bash"
         
 
-      - name: Cleanup
-        run: |
-          sudo deluser --remove-home testing
-          sudo sed -i '/Match User testing/,+5d' /etc/ssh/sshd_config
-          sudo systemctl restart ssh
+      # - name: Cleanup
+      #   run: |
+      #     sudo deluser --remove-home testing
+      #     sudo sed -i '/Match User testing/,+5d' /etc/ssh/sshd_config
+      #     sudo systemctl restart ssh
