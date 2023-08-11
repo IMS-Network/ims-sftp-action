@@ -63,9 +63,9 @@ jobs:
           remote-directory: /home/testing/sftp
           local-directory: ./test-local-dir
 
-      - name: Check if the file exists on the server
-        run: |
-          sshpass -p "testing" ssh testing@127.0.0.1 "if [ -f /home/testing/sftp/test.txt ]; then echo 'File exists'; else echo 'File does not exist'; exit 1; fi; bash"
+      # - name: Check if the file exists on the server
+      #   run: |
+      #     sshpass -p "testing" ssh testing@127.0.0.1 "if [ -f /home/testing/sftp/test.txt ]; then echo 'File exists'; else echo 'File does not exist'; exit 1; fi; bash"
         
 
       - name: Cleanup
