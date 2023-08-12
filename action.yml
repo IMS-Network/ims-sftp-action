@@ -42,5 +42,5 @@ runs:
         # Debugging line
         echo "Constructed URL: sftp://$INPUT_SERVER:$INPUT_PORT/$INPUT_REMOTE_DIRECTORY/$(basename $INPUT_LOCAL_DIRECTORY)"
         # Use curl to upload the files
-        find $INPUT_LOCAL_DIRECTORY -type f -exec bash -c 'curl -u $INPUT_USERNAME:$INPUT_PASSWORD --disable-epsv --ftp-method nocwd -T {} sftp://$INPUT_SERVER:$INPUT_PORT/$INPUT_REMOTE_DIRECTORY/$(basename {})' \;
+        find $INPUT_LOCAL_DIRECTORY -type f -exec bash -c 'curl -k -u $INPUT_USERNAME:$INPUT_PASSWORD --disable-epsv --ftp-method nocwd -T {} sftp://$INPUT_SERVER:$INPUT_PORT/$INPUT_REMOTE_DIRECTORY/$(basename {})' \;
       shell: bash
