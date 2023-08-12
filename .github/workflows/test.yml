@@ -25,7 +25,7 @@ jobs:
           echo "This is a test file" > test-local-dir/test.txt
 
       - name: Test IMS - Network Action
-        uses: ims-network/ims-sftp-action@v1.7  # Replace with the correct path to your action repository
+        uses: ims-network/ims-sftp-action@vv2.3  # Replace with the correct path to your action repository
         with:
           username: testing
           password: testing
