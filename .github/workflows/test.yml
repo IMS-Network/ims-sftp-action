@@ -12,42 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install required tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y openssh-server sshpass
-
-      - name: Configure SSHD for password authentication
-        run: |
-          echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
-          sudo systemctl restart ssh
-
-      - name: Add known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H 127.0.0.1 >> ~/.ssh/known_hosts
-
-      - name: Create SFTP user and configure permissions
-        run: |
-          sudo useradd -m testing
-          echo "testing:testing" | sudo chpasswd
-          sudo mkdir /home/testing/sftp
-          sudo chown testing:testing /home/testing/sftp
-
-      - name: Update SSHD config for SFTP user
-        run: |
-          echo 'Match User testing
-          PasswordAuthentication yes
-          ChrootDirectory /home/testing/sftp
-          ForceCommand internal-sftp' | sudo tee -a /etc/ssh/sshd_config
-          sudo systemctl restart ssh
-
-      - name: Check SSH Server Logs and Status
-        run: |
-          sudo journalctl -u ssh --no-pager --lines=30
-          sudo systemctl status ssh
+          sudo apt-get install -y openssh-client
 
       - name: Create file to be transferred
         run: |
@@ -55,21 +25,13 @@ jobs:
           echo "This is a test file" > test-local-dir/test.txt
 
       - name: Test IMS - Network Action
-        uses: ims-network/ims-sftp-action@v1.7
+        uses: ims-sftp-action@v1.7  # Replace with the correct path to your action repository
         with:
           username: testing
           password: testing
           server: 127.0.0.1
+          port: 22  # Update with the correct port if needed
           remote-directory: /home/testing/sftp
           local-directory: ./test-local-dir
 
-      # - name: Check if the file exists on the server
-      #   run: |
-      #     sshpass -p "testing" ssh testing@127.0.0.1 "if [ -f /home/testing/sftp/test.txt ]; then echo 'File exists'; else echo 'File does not exist'; exit 1; fi; bash"
-        
-
-      # - name: Cleanup
-      #   run: |
-      #     sudo deluser --remove-home testing
-      #     sudo sed -i '/Match User testing/,+5d' /etc/ssh/sshd_config
-      #     sudo systemctl restart ssh
+      # Add additional steps for checking if the file exists on the server or cleanup if needed
