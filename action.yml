@@ -36,6 +36,7 @@ runs:
         echo "INPUT_PORT=${{ inputs.port }}" >> $GITHUB_ENV
         echo "INPUT_REMOTE_DIRECTORY=${{ inputs.remote-directory }}" >> $GITHUB_ENV
         echo "INPUT_LOCAL_DIRECTORY=${{ inputs.local-directory }}" >> $GITHUB_ENV
+      shell: bash
 
     - name: Upload files using SFTP
       run: |
